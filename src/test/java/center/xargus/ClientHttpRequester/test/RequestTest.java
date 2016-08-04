@@ -1,9 +1,11 @@
-package center.xargus.ClientHttpRequester;
+package center.xargus.ClientHttpRequester.test;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import center.xargus.ClientHttpRequester.RequestService;
+import center.xargus.ClientHttpRequester.RequestService.Builder;
 import center.xargus.ClientHttpRequester.connect.Request;
 import center.xargus.ClientHttpRequester.connect.RequestMethodType;
 import center.xargus.ClientHttpRequester.connect.Response;
