@@ -29,17 +29,6 @@
 		</repository>
 	</distributionManagement>
 
-	<repositories>
-		<repository>
-			<id>ClientHttpRequester-mvn-repo</id>
-			<url>https://github.com/xargus/ClientHttpRequester/mvn-repo/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<build>
 		<plugins>
 
