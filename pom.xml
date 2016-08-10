@@ -21,6 +21,7 @@
 		</dependency>
 	</dependencies>
 
+<!--
 	<distributionManagement>
 		<repository>
 			<id>internal.repo</id>
@@ -28,7 +29,7 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
-
+-->
 	<build>
 		<plugins>
 
