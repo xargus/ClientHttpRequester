@@ -4,8 +4,8 @@
   <artifactId>ClientHttpRequester</artifactId>
   <versioning>
     <versions>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.2-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20160806083131</lastUpdated>
+    <lastUpdated>20160810092857</lastUpdated>
   </versioning>
 </metadata>
