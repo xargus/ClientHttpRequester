@@ -5,6 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -42,17 +44,30 @@ public class GzipDecompressInterceptor implements HttpResponseInterceptor {
 			outputStream.close();
 			
 			Map<String,List<String>> headerFields = response.getHeaderFields();
-			headerFields.remove(Response.CONTENT_ENCODING_KEY);
+			Map<String,List<String>> newHeaderFields = new HashMap<>();
+			copyHeader(headerFields, newHeaderFields);
+			
+			newHeaderFields.remove(Response.CONTENT_ENCODING_KEY);
 			
 			return response.newBuilder()
 					.setBody(new ByteArrayInputStream(result))
-					.setHeaderFields(headerFields)
+					.setHeaderFields(Collections.unmodifiableMap(newHeaderFields))
 					.build();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		return response;
+	}
+	
+	private void copyHeader(Map<String,List<String>> src, Map<String,List<String>> dest) {
+		for (Map.Entry<String, List<String>> entry : src.entrySet()) {
+            if (entry.getKey() == null) {
+                continue;
+            }
+
+            dest.put(entry.getKey(), entry.getValue());
+		}
 	}
 
 }
