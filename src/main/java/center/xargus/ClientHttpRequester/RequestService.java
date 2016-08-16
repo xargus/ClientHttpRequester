@@ -8,7 +8,6 @@ import center.xargus.ClientHttpRequester.connect.DefaultResponseReader;
 import center.xargus.ClientHttpRequester.connect.HttpReqeustWorker;
 import center.xargus.ClientHttpRequester.connect.Request;
 import center.xargus.ClientHttpRequester.connect.Response;
-import center.xargus.ClientHttpRequester.interceptor.GzipDecompressInterceptor;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
 
 public class RequestService<T> {
@@ -23,12 +22,16 @@ public class RequestService<T> {
 		HttpReqeustWorker<InputStream> worker = new HttpReqeustWorker<>(request.getHeaderFields(), new DefaultResponseReader());
 		Response<InputStream> response = worker.request(request.getDomain(), request.getParam(), request.getMethodType());
 		
-		responseInterceptorList.add(0, new GzipDecompressInterceptor());
-		for (HttpResponseInterceptor interceptor : responseInterceptorList) {
-			response = interceptor.intercept(response);
-		}
+		return new ResponseWrapper<T>(responseInterceptorList, responseResultTypeHandler).getResponse(response);
+	}
+	
+	public void enqueue(Request request, ClientHttpRequesterListener<T> listener) {
+		request = request.newBuilder()
+				.addHeader("Accept-Encoding", "gzip")
+				.build();
 		
-		return Response.convertNewTypeResponse(responseResultTypeHandler.handle(response.getBody()), response);
+		AsyncReqeuster<T> asyncReqeuster = new AsyncReqeuster<T>(request, new ResponseWrapper<T>(responseInterceptorList, responseResultTypeHandler), listener);
+		ThreadPoolExecutorProvider.getInstance().enqueue(asyncReqeuster);
 	}
 	
 	private RequestService(Builder<T> builder) {
@@ -59,5 +62,24 @@ public class RequestService<T> {
 		public RequestService<T> build() {
 			return new RequestService<T>(this);
 		}
+	}
+	
+	private class AsyncReqeuster<K> implements Runnable {
+		private Request request;
+		private ResponseWrapper<K> responseWrapper;
+		private ClientHttpRequesterListener<K> listener;
+		public AsyncReqeuster(Request request, ResponseWrapper<K> responseWrapper, ClientHttpRequesterListener<K> listener) {
+			this.request = request;
+			this.responseWrapper = responseWrapper;
+			this.listener = listener;
+		}
+		@Override
+		public void run() {
+			HttpReqeustWorker<InputStream> worker = new HttpReqeustWorker<>(request.getHeaderFields(), new DefaultResponseReader());
+			Response<InputStream> response = worker.request(request.getDomain(), request.getParam(), request.getMethodType());
+			
+			listener.onCompletedRequest(responseWrapper.getResponse(response));
+		}
+		
 	}
 }
