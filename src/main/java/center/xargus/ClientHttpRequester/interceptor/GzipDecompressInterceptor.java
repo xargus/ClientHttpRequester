@@ -1,8 +1,5 @@
 package center.xargus.ClientHttpRequester.interceptor;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -27,22 +24,6 @@ public class GzipDecompressInterceptor implements HttpResponseInterceptor {
 		InputStream inputStream = response.getBody();
 		
 		try {
-			GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
-			BufferedInputStream bufferedInputStream = new BufferedInputStream(gzipInputStream);
-			
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			byte[] buffer = new byte[1024];
-			int len;
-			while ((len = bufferedInputStream.read(buffer)) >0 ) {
-				outputStream.write(buffer, 0, len);
-			}
-			
-			byte[] result = outputStream.toByteArray();
-			
-			bufferedInputStream.close();
-			gzipInputStream.close();
-			outputStream.close();
-			
 			Map<String,List<String>> headerFields = response.getHeaderFields();
 			Map<String,List<String>> newHeaderFields = new HashMap<>();
 			copyHeader(headerFields, newHeaderFields);
@@ -50,7 +31,7 @@ public class GzipDecompressInterceptor implements HttpResponseInterceptor {
 			newHeaderFields.remove(Response.CONTENT_ENCODING_KEY);
 			
 			return response.newBuilder()
-					.setBody(new ByteArrayInputStream(result))
+					.setBody(new GZIPInputStream(inputStream))
 					.setHeaderFields(Collections.unmodifiableMap(newHeaderFields))
 					.build();
 		} catch (IOException e) {
