@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import center.xargus.ClientHttpRequester.connect.Response;
+import center.xargus.ClientHttpRequester.Response;
 
 public class GzipDecompressInterceptor implements HttpResponseInterceptor {
 

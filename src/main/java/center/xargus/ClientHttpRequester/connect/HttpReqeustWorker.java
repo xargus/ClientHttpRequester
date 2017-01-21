@@ -1,6 +1,9 @@
 package center.xargus.ClientHttpRequester.connect;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -8,63 +11,70 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public class HttpReqeustWorker<T> {
-	private HttpURLConnection conn;
-	private HttpInputStreamHandable<T> handable;
-	private Map<String,String> requestHeaderFields;
+import center.xargus.ClientHttpRequester.HttpRequestable;
+import center.xargus.ClientHttpRequester.Request;
+import center.xargus.ClientHttpRequester.RequestMethodType;
+import center.xargus.ClientHttpRequester.Response;
+import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
+import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
+import center.xargus.ClientHttpRequester.utils.IOUtils;
+
+public class HttpReqeustWorker implements HttpRequestable {
+	private Request request;
 	
-	public HttpReqeustWorker() {
-		this(null,null);
+	public HttpReqeustWorker(Request request) {
+		this.request = request;
 	}
 	
-	public HttpReqeustWorker(HttpInputStreamHandable<T> handable) {
-		this(null,handable);
-	}
-	
-	public HttpReqeustWorker(Map<String,String> headerFields, HttpInputStreamHandable<T> handable) {
-		this.handable = handable;
-		this.requestHeaderFields = headerFields;
-	}
-	
-	public Response<T> request(String domain, String param, RequestMethodType methodType) {
-		if (methodType == null) {
-			methodType = RequestMethodType.GET;
+	@Override
+	public Response<InputStream> request() throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException {
+		if (request.getMethodType() == null) {
+			throw new RequestMethodNotFoundException();
 		}
 		
-		T handleStreamResult = null;
+		if (request.getDomain() == null) {
+			throw new RequestUrlNotCorrectException();
+		}
+		
+		InputStream connectionInputStream = null;
+		OutputStream connectionOutputStream = null;
 		Map<String,List<String>> headerFields = null;
 		int responseCode = -1;
 		String responseMessage = null;
 		
+		HttpURLConnection conn = null;
+		
 		try {
-			URL url = new URL(getFullUrl(domain, param, methodType));
+			URL url = new URL(request.getDomain());
 			conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod(methodType.toString());
-			setRequestHeader(conn, requestHeaderFields);
+			conn.setDoInput(true);
+			conn.setRequestMethod(request.getMethodType().toString());
+			setRequestHeader(conn, request.getHeaderFields());
 			
-			if (methodType == RequestMethodType.POST) {
-				putPostParam(conn, param);
+			if (request.getMethodType() == RequestMethodType.POST) {
+				conn.setDoOutput(true);
+				connectionOutputStream = conn.getOutputStream();
+				writePostData(connectionOutputStream, request.getPostStream());
 			}
 			
 			responseCode = conn.getResponseCode();
 			responseMessage = conn.getResponseMessage();
 			headerFields  = conn.getHeaderFields();
-			if (handable != null) {
-				handleStreamResult = handable.handle(conn.getInputStream());
-			}
-			
+			connectionInputStream = conn.getInputStream();
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			throw new RequestUrlNotCorrectException(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
-			if (conn != null) {
-				conn.disconnect();
+			if (responseCode == -1 || responseCode != HttpURLConnection.HTTP_OK) {
+				IOUtils.closeQuietly(connectionInputStream);
+				IOUtils.closeQuietly(connectionOutputStream);
+				IOUtils.closeQuietly(conn);
 			}
 		}
 		
-		return new Response.Builder<T>()
-				.setBody(handleStreamResult)
+		return new Response.Builder<InputStream>()
+				.setBody(new ConnectionCancelableStream(conn, connectionInputStream, connectionOutputStream))
 				.setResponseCode(responseCode)
 				.setResponseMessage(responseMessage)
 				.setHeaderFields(headerFields).build();
@@ -84,21 +94,18 @@ public class HttpReqeustWorker<T> {
 		}
 	}
 	
-	private void putPostParam(HttpURLConnection conn, String param) throws IOException {
-		if (conn != null && param != null && param.length() > 0) {
-			OutputStream outputStream = conn.getOutputStream();
-			outputStream.write(param.getBytes());
+	private void writePostData(OutputStream outputStream, InputStream inputStream) throws IOException {
+		if (outputStream != null && inputStream != null) {
+			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+			byte[] buffered = new byte[1024];
+			int len;
+			while ((len = bufferedInputStream.read(buffered, 0, 1024)) != -1) {
+				bufferedOutputStream.write(buffered, 0, len);
+			}
 			outputStream.flush();
-			outputStream.close();
+			
+			IOUtils.closeQuietly(bufferedInputStream);
 		}
-	}
-	
-	private String getFullUrl(String url, String param, RequestMethodType method) {
-		String fullUrl = url;
-		if (param != null && method != null && method == RequestMethodType.GET) {
-			fullUrl += "?"+param;
-		}
-		
-		return fullUrl;
 	}
 }

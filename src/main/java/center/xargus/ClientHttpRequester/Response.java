@@ -1,4 +1,4 @@
-package center.xargus.ClientHttpRequester.connect;
+package center.xargus.ClientHttpRequester;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,10 +7,10 @@ import java.util.Map;
 public class Response<T>{
 	public static final String CONTENT_ENCODING_KEY = "Content-Encoding";
 	
-	private T body;
-	private Map<String,List<String>> headerFields;
-	private int responseCode;
-	private String responseMessage;
+	private final T body;
+	private final Map<String,List<String>> headerFields;
+	private final int responseCode;
+	private final String responseMessage;
 	
 	public static <K,F> Response<K> convertNewTypeResponse(K body, Response<F> response) {
 		return new Response.Builder<K>()

@@ -1,17 +1,18 @@
-package center.xargus.ClientHttpRequester.connect;
+package center.xargus.ClientHttpRequester;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Request {
-	private String domain;
-	private String param;
-	private RequestMethodType methodType;
-	private Map<String,String> headerFields;
+	private final String domain;
+	private final InputStream postStream;
+	private final RequestMethodType methodType;
+	private final Map<String,String> headerFields;
 	
 	private Request(Builder builder) {
 		this.domain = builder.domain;
-		this.param = builder.param;
+		this.postStream = builder.postStream;
 		this.methodType = builder.methodType;
 		this.headerFields = builder.headerFields;
 	}
@@ -24,8 +25,8 @@ public class Request {
 		return domain;
 	}
 
-	public String getParam() {
-		return param;
+	public InputStream getPostStream() {
+		return postStream;
 	}
 
 	public RequestMethodType getMethodType() {
@@ -38,7 +39,7 @@ public class Request {
 
 	public static class Builder {
 		private String domain;
-		private String param;
+		private InputStream postStream;
 		private RequestMethodType methodType;
 		private Map<String,String> headerFields;
 		
@@ -48,7 +49,7 @@ public class Request {
 		
 		public Builder(Request request) {
 			this.domain = request.domain;
-			this.param = request.param;
+			this.postStream = request.postStream;
 			this.methodType = request.methodType;
 			this.headerFields = request.headerFields;
 		}
@@ -58,8 +59,8 @@ public class Request {
 			return this;
 		}
 		
-		public Builder setParam(String param) {
-			this.param = param;
+		public Builder setPostStream(InputStream inputStream) {
+			this.postStream = inputStream;
 			return this;
 		}
 		
