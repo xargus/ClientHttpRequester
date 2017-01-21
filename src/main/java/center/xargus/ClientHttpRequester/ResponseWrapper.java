@@ -3,7 +3,6 @@ package center.xargus.ClientHttpRequester;
 import java.io.InputStream;
 import java.util.List;
 
-import center.xargus.ClientHttpRequester.connect.Response;
 import center.xargus.ClientHttpRequester.interceptor.GzipDecompressInterceptor;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
 

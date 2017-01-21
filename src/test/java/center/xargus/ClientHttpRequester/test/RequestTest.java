@@ -2,15 +2,19 @@ package center.xargus.ClientHttpRequester.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
 import center.xargus.ClientHttpRequester.ClientHttpRequesterListener;
+import center.xargus.ClientHttpRequester.Request;
+import center.xargus.ClientHttpRequester.RequestMethodType;
 import center.xargus.ClientHttpRequester.RequestService;
-import center.xargus.ClientHttpRequester.connect.Request;
-import center.xargus.ClientHttpRequester.connect.RequestMethodType;
-import center.xargus.ClientHttpRequester.connect.Response;
+import center.xargus.ClientHttpRequester.Response;
+import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
+import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
 
 public class RequestTest {
 	
@@ -24,11 +28,20 @@ public class RequestTest {
 		RequestService<String> requestService = 
 				new RequestService.Builder<String>()
 				.build();
-		Response<String> response = requestService.request(request);
+		Response<String> response;
 		
-		System.out.println(response.getBody());
-		
-		assertEquals(response.getResponseCode(),200);
+		try {
+			response = requestService.request(request);
+			
+			System.out.println(response.getBody());
+			assertEquals(response.getResponseCode(),200);
+		} catch (RequestMethodNotFoundException e) {
+			e.printStackTrace();
+		} catch (RequestUrlNotCorrectException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
@@ -49,6 +62,12 @@ public class RequestTest {
 			public void onCompletedRequest(Response<String> response) {
 				System.out.println(response.getBody());
 				assertEquals(response.getResponseCode(),200);
+				latch.countDown();
+			}
+
+			@Override
+			public void onFailRequest(Response<InputStream> response, Exception e) {
+				System.out.println("fail");
 				latch.countDown();
 			}
 		});
