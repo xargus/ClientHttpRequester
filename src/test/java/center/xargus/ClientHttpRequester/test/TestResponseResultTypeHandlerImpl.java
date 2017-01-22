@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import center.xargus.ClientHttpRequester.ResponseResultTypeHandler;
+import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 
 public class TestResponseResultTypeHandlerImpl implements ResponseResultTypeHandler<String>{
 
 	@Override
-	public String handle(InputStream response) {
+	public String handle(InputStream response) throws RequestCanceledException {
 		try {
 			int len;
 			byte[] buffered = new byte[1024];
@@ -17,9 +18,11 @@ public class TestResponseResultTypeHandlerImpl implements ResponseResultTypeHand
 				Thread.sleep(100);
 			}
 		} catch (IOException e) {
-			System.out.println("IOException");
+			System.out.println("!!!!");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} finally {
+			System.out.println("end");
 		}
 		return null;
 	}

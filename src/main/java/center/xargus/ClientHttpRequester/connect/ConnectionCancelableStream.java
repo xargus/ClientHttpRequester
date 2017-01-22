@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 
+import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 import center.xargus.ClientHttpRequester.utils.IOUtils;
 
 public class ConnectionCancelableStream extends InputStream implements StreamCancelable {
@@ -44,7 +45,7 @@ public class ConnectionCancelableStream extends InputStream implements StreamCan
 	public int read(byte[] b, int off, int len) throws IOException {
 		if (isCanceled) {
 			closeStream();
-			return -1;
+			throw new RequestCanceledException();
 		}
 		
 		try {
@@ -64,7 +65,7 @@ public class ConnectionCancelableStream extends InputStream implements StreamCan
 	public int available() throws IOException {
 		if (isCanceled) {
 			closeStream();
-			return -1;
+			throw new RequestCanceledException();
 		} else {
 			return inputStream.available();
 		}
@@ -74,14 +75,11 @@ public class ConnectionCancelableStream extends InputStream implements StreamCan
 		IOUtils.closeQuietly(inputStream);
 		IOUtils.closeQuietly(outputStream);
 		IOUtils.closeQuietly(httpURLConnection);
-		
-		System.out.println("connection close");
 	}
 	
 	@Override
 	public void cancel() {
 		isCanceled = true;
-		System.out.println("cancel!!");
 	}
 
 	@Override

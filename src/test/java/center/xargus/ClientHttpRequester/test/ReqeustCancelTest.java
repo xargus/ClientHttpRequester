@@ -1,6 +1,7 @@
 package center.xargus.ClientHttpRequester.test;
 
 import java.io.InputStream;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
@@ -24,22 +25,35 @@ public class ReqeustCancelTest {
 				.addResponseResultTypeHandler(new TestResponseResultTypeHandlerImpl())
 				.build();
 		
+		final CountDownLatch latch = new CountDownLatch(1);
 		requestService.enqueue(request, new ClientHttpRequesterListener<String>() {
 			
 			@Override
 			public void onCompletedRequest(Response<String> response) {
+				System.out.println("completed");
+				latch.countDown();
 			}
 
 			@Override
 			public void onFailRequest(Response<InputStream> response, Exception e) {
+				System.out.println("fail");
+				latch.countDown();
 			}
 		});
 		
 		try {
 			Thread.sleep(500);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} finally {
 			RequestService.cacnel("http://www.naver.com/");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		}
+		
+		
+		try {
+			latch.await();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
 		}
 	}
 }

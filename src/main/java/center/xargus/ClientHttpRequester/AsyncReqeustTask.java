@@ -4,9 +4,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import center.xargus.ClientHttpRequester.connect.HttpReqeustWorker;
-import center.xargus.ClientHttpRequester.connect.ResponseWrapper;
 import center.xargus.ClientHttpRequester.connect.StreamCancelable;
 import center.xargus.ClientHttpRequester.connect.TaskCancelRunnable;
+import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 
 public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 	private Request request;
@@ -14,12 +14,14 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 	private ClientHttpRequesterListener<K> listener;
 	private StreamCancelable cancelable;
 	private AsyncReqeustTaskContainable taskRemovable;
+	private Object lockObj;
 	
 	public AsyncReqeustTask(Request request, ResponseWrapper<K> responseWrapper, ClientHttpRequesterListener<K> listener, AsyncReqeustTaskContainable taskRemovable) {
 		this.request = request;
 		this.responseWrapper = responseWrapper;
 		this.listener = listener;
 		this.taskRemovable = taskRemovable;
+		this.lockObj = new Object();
 		
 		cancelable = new StreamCancelable() {
 			private volatile boolean isCanceled = false;
@@ -46,11 +48,7 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 			HttpRequestable worker = new HttpReqeustWorker(request);
 			Response<InputStream> response = worker.request();
 			if (response.getBody() instanceof StreamCancelable) {
-				if (!cancelable.isCanceled()) {
-					cancelable = (StreamCancelable) response.getBody();
-				} else {
-					return;
-				}
+				setCancelable((StreamCancelable)response.getBody());
 			}
 			
 			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {	
@@ -62,16 +60,28 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 			if (!cancelable.isCanceled()) {
 				listener.onCompletedRequest(resultResponse);
 			}
+		} catch (RequestCanceledException exception) {
+			System.out.println("reqeust cancel exception : "+getKey());
+			listener.onFailRequest(null, exception);
 		} catch (Exception e) {
 			listener.onFailRequest(null, e);
 		} finally {
 			taskRemovable.cancel(getKey());
+			System.out.println("end task : "+getKey());
+		}
+	}
+	
+	private void setCancelable(StreamCancelable streamCancelable) {
+		synchronized (lockObj) {
+			cancelable = streamCancelable;
 		}
 	}
 	
 	@Override
 	public void cancel() {
-		cancelable.cancel();
+		synchronized (lockObj) {
+			cancelable.cancel();
+		}
 	}
 	@Override
 	public boolean isCanceled() {

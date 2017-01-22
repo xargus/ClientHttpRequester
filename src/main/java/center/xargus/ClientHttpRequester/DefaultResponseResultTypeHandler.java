@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
+
 public class DefaultResponseResultTypeHandler implements ResponseResultTypeHandler<String> {
 
 	@Override
-	public String handle(InputStream response) {
+	public String handle(InputStream response) throws RequestCanceledException {
 		InputStreamReader inReader = new InputStreamReader(response);
 		BufferedReader reader = new BufferedReader(inReader);
 		

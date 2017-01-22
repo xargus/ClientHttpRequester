@@ -3,6 +3,7 @@ package center.xargus.ClientHttpRequester;
 import java.io.InputStream;
 import java.util.List;
 
+import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 import center.xargus.ClientHttpRequester.interceptor.GzipDecompressInterceptor;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
 
@@ -15,7 +16,7 @@ public class ResponseWrapper<T> {
 		this.responseResultTypeHandler = responseResultTypeHandler;
 	}
 	
-	public Response<T> getResponse(Response<InputStream> response) {
+	public Response<T> getResponse(Response<InputStream> response) throws RequestCanceledException {
 		responseInterceptorList.add(0, new GzipDecompressInterceptor());
 		for (HttpResponseInterceptor interceptor : responseInterceptorList) {
 			response = interceptor.intercept(response);

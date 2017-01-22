@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import center.xargus.ClientHttpRequester.connect.DefaultResponseResultTypeHandler;
 import center.xargus.ClientHttpRequester.connect.HttpReqeustWorker;
-import center.xargus.ClientHttpRequester.connect.ResponseWrapper;
 import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
 import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
