@@ -47,10 +47,9 @@ public class RequestService<T> {
 		private List<HttpResponseInterceptor> responseInterceptorList;
 		private ResponseResultTypeHandler<T> responseResultTypeHandler;
 		
-		@SuppressWarnings("unchecked")
 		public Builder() {
 			responseInterceptorList = new ArrayList<>();
-			responseResultTypeHandler = (ResponseResultTypeHandler<T>) new DefaultResponseResultTypeHandler();
+//			responseResultTypeHandler = (ResponseResultTypeHandler<T>) new DefaultResponseResultTypeHandler();
 		}
 		
 		public Builder<T> addHttpResponseInterceptor(HttpResponseInterceptor interceptor) {

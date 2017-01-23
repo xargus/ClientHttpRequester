@@ -1,4 +1,4 @@
-package center.xargus.ClientHttpRequester.test;
+package center.xargus.ClientHttpRequester.test.request;
 
 import java.io.IOException;
 import java.io.InputStream;

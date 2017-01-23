@@ -6,6 +6,7 @@ import java.util.List;
 
 import center.xargus.ClientHttpRequester.interceptor.GzipDecompressInterceptor;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
+import center.xargus.ClientHttpRequester.resulthandle.ResponseResultTypeHandlerFactory;
 
 public class ResponseWrapper<T> {
 	private List<HttpResponseInterceptor> responseInterceptorList;
@@ -22,6 +23,9 @@ public class ResponseWrapper<T> {
 			response = interceptor.intercept(response);
 		}
 		
+		if (responseResultTypeHandler == null) {
+			responseResultTypeHandler = ResponseResultTypeHandlerFactory.create();
+		}
 		return Response.convertNewTypeResponse(responseResultTypeHandler.handle(response.getBody()), response);
 	}
 }

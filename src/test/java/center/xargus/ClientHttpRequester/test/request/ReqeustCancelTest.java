@@ -1,4 +1,4 @@
-package center.xargus.ClientHttpRequester.test;
+package center.xargus.ClientHttpRequester.test.request;
 
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;

@@ -1,9 +1,11 @@
-package center.xargus.ClientHttpRequester;
+package center.xargus.ClientHttpRequester.resulthandle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import center.xargus.ClientHttpRequester.ResponseResultTypeHandler;
 
 public class DefaultResponseResultTypeHandler implements ResponseResultTypeHandler<String> {
 

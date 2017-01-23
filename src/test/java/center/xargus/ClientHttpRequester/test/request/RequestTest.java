@@ -1,4 +1,4 @@
-package center.xargus.ClientHttpRequester.test;
+package center.xargus.ClientHttpRequester.test.request;
 
 import static org.junit.Assert.assertEquals;
 
