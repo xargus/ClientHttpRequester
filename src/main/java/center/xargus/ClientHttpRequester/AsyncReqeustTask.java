@@ -62,7 +62,6 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 			}
 		} catch (RequestCanceledException exception) {
 			System.out.println("reqeust cancel exception : "+getKey());
-			listener.onFailRequest(null, exception);
 		} catch (Exception e) {
 			listener.onFailRequest(null, e);
 		} finally {
@@ -73,6 +72,10 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 	
 	private void setCancelable(StreamCancelable streamCancelable) {
 		synchronized (lockObj) {
+			if (cancelable.isCanceled()) {
+				streamCancelable.cancel();
+			}
+			
 			cancelable = streamCancelable;
 		}
 	}
