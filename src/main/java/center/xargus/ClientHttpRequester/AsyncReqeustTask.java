@@ -3,7 +3,6 @@ package center.xargus.ClientHttpRequester;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
-import center.xargus.ClientHttpRequester.connect.HttpReqeustWorker;
 import center.xargus.ClientHttpRequester.connect.StreamCancelable;
 import center.xargus.ClientHttpRequester.connect.TaskCancelRunnable;
 import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
@@ -15,9 +14,15 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 	private StreamCancelable cancelable;
 	private AsyncReqeustTaskContainable taskRemovable;
 	private Object lockObj;
+	private HttpRequestable httpRequestable;
 	
-	public AsyncReqeustTask(Request request, ResponseWrapper<K> responseWrapper, ClientHttpRequesterListener<K> listener, AsyncReqeustTaskContainable taskRemovable) {
+	public AsyncReqeustTask(Request request, 
+			HttpRequestable httpRequestable, 
+			ResponseWrapper<K> responseWrapper, 
+			ClientHttpRequesterListener<K> listener, 
+			AsyncReqeustTaskContainable taskRemovable) {
 		this.request = request;
+		this.httpRequestable = httpRequestable;
 		this.responseWrapper = responseWrapper;
 		this.listener = listener;
 		this.taskRemovable = taskRemovable;
@@ -45,15 +50,14 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 		}
 		
 		try {
-			HttpRequestable worker = new HttpReqeustWorker(request);
-			Response<InputStream> response = worker.request();
-			if (response.getBody() instanceof StreamCancelable) {
-				setCancelable((StreamCancelable)response.getBody());
-			}
-			
+			Response<InputStream> response = httpRequestable.request(request);
 			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {	
 				listener.onFailRequest(response, null);
 				return;
+			}
+			
+			if (response.getBody() instanceof StreamCancelable) {
+				setCancelable((StreamCancelable)response.getBody());
 			}
 			
 			Response<K> resultResponse = responseWrapper.getResponse(response);

@@ -20,14 +20,9 @@ import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException
 import center.xargus.ClientHttpRequester.utils.IOUtils;
 
 public class HttpReqeustWorker implements HttpRequestable {
-	private Request request;
-	
-	public HttpReqeustWorker(Request request) {
-		this.request = request;
-	}
 	
 	@Override
-	public Response<InputStream> request() throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException {
+	public Response<InputStream> request(Request request) throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException {
 		if (request.getMethodType() == null) {
 			throw new RequestMethodNotFoundException();
 		}

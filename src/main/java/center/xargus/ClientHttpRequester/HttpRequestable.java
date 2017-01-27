@@ -7,5 +7,5 @@ import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundExceptio
 import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
 
 public interface HttpRequestable {
-	Response<InputStream> request() throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException;
+	Response<InputStream> request(Request request) throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException;
 }

@@ -1,6 +1,5 @@
 package center.xargus.ClientHttpRequester;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +13,14 @@ public class RequestService<T> {
 	private List<HttpResponseInterceptor> responseInterceptorList;
 	private ResponseResultTypeHandler<T> responseResultTypeHandler;
 	private Class<T> resultClassType;
+	private HttpRequestable httpRequestable;
 
 	public Response<T> request(Request request) throws RequestMethodNotFoundException, RequestUrlNotCorrectException, Exception {
 		request = request.newBuilder()
 				.addHeader("Accept-Encoding", "gzip")
 				.build();
 		
-		HttpRequestable worker = new HttpReqeustWorker(request);
-		Response<InputStream> response = worker.request();
+		Response<InputStream> response = httpRequestable.request(request);
 		
 		return new ResponseWrapper<T>(responseInterceptorList, responseResultTypeHandler, resultClassType).getResponse(response);
 	}
@@ -31,7 +30,8 @@ public class RequestService<T> {
 				.addHeader("Accept-Encoding", "gzip")
 				.build();
 		
-		AsyncReqeustTask<T> task = new AsyncReqeustTask<T>(request, 
+		AsyncReqeustTask<T> task = new AsyncReqeustTask<T>(request,
+				httpRequestable,
 				new ResponseWrapper<T>(responseInterceptorList, responseResultTypeHandler, resultClassType), 
 				listener, 
 				AsyncReqeustTaskContainer.getInstance());
@@ -46,16 +46,19 @@ public class RequestService<T> {
 		this.responseInterceptorList = builder.responseInterceptorList;
 		this.responseResultTypeHandler = builder.responseResultTypeHandler;
 		this.resultClassType = builder.resultClassType;
+		this.httpRequestable = builder.httpRequestable;
 	}
 	
 	public static class Builder<T> {
 		private List<HttpResponseInterceptor> responseInterceptorList;
 		private ResponseResultTypeHandler<T> responseResultTypeHandler;
 		private Class<T> resultClassType;
+		private HttpRequestable httpRequestable;
 		
 		public Builder(Class<T> resultClassType) {
 			this.resultClassType = resultClassType;
 			this.responseInterceptorList = new ArrayList<>();
+			this.httpRequestable = new HttpReqeustWorker();
 		}
 		
 		public Builder<T> addHttpResponseInterceptor(HttpResponseInterceptor interceptor) {
@@ -65,6 +68,11 @@ public class RequestService<T> {
 		
 		public Builder<T> setResponseResultTypeHandler(ResponseResultTypeHandler<T> reponseResultTypeHandler) {
 			this.responseResultTypeHandler = reponseResultTypeHandler;
+			return this;
+		}
+		
+		public Builder<T> setHttpReqeuster(HttpRequestable httpRequestable) {
+			this.httpRequestable = httpRequestable;
 			return this;
 		}
 		

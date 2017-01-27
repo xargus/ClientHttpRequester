@@ -1,7 +1,5 @@
 package center.xargus.ClientHttpRequester.test.response;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -61,6 +59,7 @@ public class ResponseResultTypeHandleTest {
 		RequestService<Bitmap> requestService = 
 				new RequestService.Builder<Bitmap>(Bitmap.class)
 				.setResponseResultTypeHandler(new BitmapResponseHandler())
+				.setHttpReqeuster(new DummyHttpRequester())
 				.build();
 		Response<Bitmap> response;
 		
@@ -68,7 +67,6 @@ public class ResponseResultTypeHandleTest {
 			response = requestService.request(request);
 			
 			System.out.println(response.getBody().toString());
-			assertEquals(response.getResponseCode(),200);
 		} catch (RequestMethodNotFoundException e) {
 			e.printStackTrace();
 		} catch (RequestUrlNotCorrectException e) {

@@ -8,7 +8,6 @@ public class BitmapResponseHandler implements ResponseResultTypeHandler<Bitmap>{
 
 	@Override
 	public Bitmap handle(InputStream response) throws Exception {
-		response.close();
 		return new Bitmap();
 	}
 
