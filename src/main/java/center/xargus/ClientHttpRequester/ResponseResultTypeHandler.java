@@ -1,8 +1,7 @@
 package center.xargus.ClientHttpRequester;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public interface ResponseResultTypeHandler<T> {
-	T handle(InputStream response) throws IOException;
+	T handle(InputStream response) throws Exception;
 }

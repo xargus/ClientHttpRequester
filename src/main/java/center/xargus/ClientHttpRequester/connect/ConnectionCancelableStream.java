@@ -71,6 +71,11 @@ public class ConnectionCancelableStream extends InputStream implements StreamCan
 		}
 	}
 
+	@Override
+	public void close() throws IOException {
+		closeStream();
+	}
+
 	private void closeStream() {
 		IOUtils.closeQuietly(inputStream);
 		IOUtils.closeQuietly(outputStream);

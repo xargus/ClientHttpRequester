@@ -1,8 +1,11 @@
 package center.xargus.ClientHttpRequester;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import center.xargus.ClientHttpRequester.utils.TextUtils;
 
 public class Request {
 	private final String domain;
@@ -59,7 +62,15 @@ public class Request {
 			return this;
 		}
 		
-		public Builder setPostStream(InputStream inputStream) {
+		public Builder setPostBody(String body) {
+			if (!TextUtils.isEmpty(body)) {
+				setPostBody(new ByteArrayInputStream(body.getBytes()));
+			}
+			
+			return this;
+		}
+		
+		public Builder setPostBody(InputStream inputStream) {
 			this.postStream = inputStream;
 			return this;
 		}

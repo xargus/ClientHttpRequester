@@ -21,8 +21,8 @@ public class ReqeustCancelTest {
 				.build();
 		
 		RequestService<String> requestService = 
-				new RequestService.Builder<String>()
-				.addResponseResultTypeHandler(new TestResponseResultTypeHandlerImpl())
+				new RequestService.Builder<String>(String.class)
+				.setResponseResultTypeHandler(new TestCancelResponseResultHandlerImpl())
 				.build();
 		
 		final CountDownLatch latch = new CountDownLatch(1);

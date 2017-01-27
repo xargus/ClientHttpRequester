@@ -3,7 +3,9 @@ package center.xargus.ClientHttpRequester.parser;
 import center.xargus.ClientHttpRequester.annotation.JsonModel;
 import center.xargus.ClientHttpRequester.annotation.XmlModel;
 
+@SuppressWarnings("rawtypes")
 public class ParserFactory {
+	
 	public static <T> Parable<T> create(Class classType) {
 		return getParserType(classType).getParser();
 	}
@@ -34,7 +36,7 @@ public class ParserFactory {
 		public abstract <T> Parable<T> getParser();
 	}
 	
-	private static ParserType getParserType(Class classType) {
+	private static <T> ParserType getParserType(Class classType) {
 		ParserType parserType = ParserType.NONE;
 		for (ParserType type : ParserType.values()) {
 			if (type.classType == classType) {

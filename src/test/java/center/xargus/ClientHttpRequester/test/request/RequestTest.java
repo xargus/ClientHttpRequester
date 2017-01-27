@@ -2,7 +2,6 @@ package center.xargus.ClientHttpRequester.test.request;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -26,7 +25,7 @@ public class RequestTest {
 				.build();
 		
 		RequestService<String> requestService = 
-				new RequestService.Builder<String>()
+				new RequestService.Builder<String>(String.class)
 				.build();
 		Response<String> response;
 		
@@ -39,7 +38,7 @@ public class RequestTest {
 			e.printStackTrace();
 		} catch (RequestUrlNotCorrectException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -52,7 +51,7 @@ public class RequestTest {
 				.build();
 		
 		RequestService<String> requestService = 
-				new RequestService.Builder<String>()
+				new RequestService.Builder<String>(String.class)
 				.build();
 		
 		final CountDownLatch latch = new CountDownLatch(1);

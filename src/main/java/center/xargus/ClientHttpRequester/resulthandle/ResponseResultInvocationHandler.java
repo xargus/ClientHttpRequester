@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import center.xargus.ClientHttpRequester.parser.Parable;
 import center.xargus.ClientHttpRequester.parser.ParserFactory;
 
-public class ResponseResultInvocationHandler<T> implements InvocationHandler {
+class ResponseResultInvocationHandler<T> implements InvocationHandler {
 
 	private Class resultClassType;
 	
@@ -23,7 +23,7 @@ public class ResponseResultInvocationHandler<T> implements InvocationHandler {
 		
 		Parable<T> parable = getParser(resultClassType.getAnnotations());
 		if (parable != null) {
-			result = parable.parse(inputStream);
+			result = parable.parse(inputStream, resultClassType);
 		} else {
 			result = (T) new DefaultResponseResultTypeHandler().handle(inputStream);
 		}
