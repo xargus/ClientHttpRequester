@@ -2,12 +2,12 @@ package center.xargus.ClientHttpRequester.reqeust;
 
 import center.xargus.ClientHttpRequester.ClientHttpRequesterListener;
 import center.xargus.ClientHttpRequester.Request;
-import center.xargus.ClientHttpRequester.RequestService;
+import center.xargus.ClientHttpRequester.RequestClient;
 
 public class AsyncReqeuster<T> {
 
-	private RequestService<T> service;
-	public AsyncReqeuster(RequestService<T> service) {
+	private RequestClient<T> service;
+	public AsyncReqeuster(RequestClient<T> service) {
 		this.service = service;
 	}
 	

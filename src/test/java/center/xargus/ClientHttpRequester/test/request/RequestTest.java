@@ -10,7 +10,7 @@ import org.junit.Test;
 import center.xargus.ClientHttpRequester.ClientHttpRequesterListener;
 import center.xargus.ClientHttpRequester.Request;
 import center.xargus.ClientHttpRequester.RequestMethodType;
-import center.xargus.ClientHttpRequester.RequestService;
+import center.xargus.ClientHttpRequester.RequestClient;
 import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
 import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
@@ -24,8 +24,8 @@ public class RequestTest {
 				.setRequestMethodType(RequestMethodType.GET)
 				.build();
 		
-		RequestService<String> requestService = 
-				new RequestService.Builder<String>(String.class)
+		RequestClient<String> requestService = 
+				new RequestClient.Builder<String>(String.class)
 				.build();
 		Response<String> response;
 		
@@ -50,8 +50,8 @@ public class RequestTest {
 				.setRequestMethodType(RequestMethodType.GET)
 				.build();
 		
-		RequestService<String> requestService = 
-				new RequestService.Builder<String>(String.class)
+		RequestClient<String> requestService = 
+				new RequestClient.Builder<String>(String.class)
 				.build();
 		
 		final CountDownLatch latch = new CountDownLatch(1);

@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 
 import center.xargus.ClientHttpRequester.Request;
 import center.xargus.ClientHttpRequester.RequestMethodType;
-import center.xargus.ClientHttpRequester.RequestService;
+import center.xargus.ClientHttpRequester.RequestClient;
 import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.ResponseResultTypeHandler;
 import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
@@ -56,8 +56,8 @@ public class ResponseResultTypeHandleTest {
 				.setRequestMethodType(RequestMethodType.GET)
 				.build();
 		
-		RequestService<Bitmap> requestService = 
-				new RequestService.Builder<Bitmap>(Bitmap.class)
+		RequestClient<Bitmap> requestService = 
+				new RequestClient.Builder<Bitmap>(Bitmap.class)
 				.setResponseResultTypeHandler(new BitmapResponseHandler())
 				.setHttpReqeuster(new DummyHttpRequester())
 				.build();

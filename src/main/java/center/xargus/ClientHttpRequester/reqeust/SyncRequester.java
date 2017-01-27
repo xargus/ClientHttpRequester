@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import center.xargus.ClientHttpRequester.Request;
-import center.xargus.ClientHttpRequester.RequestService;
+import center.xargus.ClientHttpRequester.RequestClient;
 import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
 import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
 
 public class SyncRequester<T> {
 
-	private RequestService<T> service;
+	private RequestClient<T> service;
 	private Cancelable cancelable;
 
-	public SyncRequester(RequestService<T> service) {
+	public SyncRequester(RequestClient<T> service) {
 		this.service = service;
 	}
 	
