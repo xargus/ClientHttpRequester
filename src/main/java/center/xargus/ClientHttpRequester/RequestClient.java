@@ -11,7 +11,7 @@ import center.xargus.ClientHttpRequester.reqeust.AsyncReqeuster;
 import center.xargus.ClientHttpRequester.reqeust.HttpReqeustWorker;
 import center.xargus.ClientHttpRequester.reqeust.SyncRequester;
 
-public class RequestService<T> {
+public class RequestClient<T> {
 	private List<HttpResponseInterceptor> responseInterceptorList;
 	private ResponseResultTypeHandler<T> responseResultTypeHandler;
 	private Class<T> resultClassType;
@@ -69,7 +69,7 @@ public class RequestService<T> {
 		return httpRequestable;
 	}
 
-	private RequestService(Builder<T> builder) {
+	private RequestClient(Builder<T> builder) {
 		this.responseInterceptorList = builder.responseInterceptorList;
 		this.responseResultTypeHandler = builder.responseResultTypeHandler;
 		this.resultClassType = builder.resultClassType;
@@ -103,8 +103,8 @@ public class RequestService<T> {
 			return this;
 		}
 		
-		public RequestService<T> build() {
-			return new RequestService<T>(this);
+		public RequestClient<T> build() {
+			return new RequestClient<T>(this);
 		}
 	}
 }
