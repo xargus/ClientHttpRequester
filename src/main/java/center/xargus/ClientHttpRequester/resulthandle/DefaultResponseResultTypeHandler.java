@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 import center.xargus.ClientHttpRequester.ResponseResultTypeHandler;
 
-public class DefaultResponseResultTypeHandler implements ResponseResultTypeHandler<String> {
+class DefaultResponseResultTypeHandler implements ResponseResultTypeHandler<String> {
 
 	@Override
 	public String handle(InputStream response) throws Exception {

@@ -1,4 +1,4 @@
-package center.xargus.ClientHttpRequester;
+package center.xargus.ClientHttpRequester.reqeust;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -7,21 +7,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import center.xargus.ClientHttpRequester.connect.StreamCancelable;
-import center.xargus.ClientHttpRequester.connect.TaskCancelRunnable;
-
 class AsyncReqeustTaskContainer implements AsyncReqeustTaskContainable {
 	private static AsyncReqeustTaskContainer instance;
 	private ThreadPoolExecutor threadPool;
 	
-	private Map<String, WeakReference<StreamCancelable>> cancelableMap;
+	private Map<String, WeakReference<Cancelable>> cancelableMap;
 	
 	private AsyncReqeustTaskContainer() {
 		threadPool = new ThreadPoolExecutor(3, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		cancelableMap = new HashMap<>();
 	}
 	
-	public static synchronized AsyncReqeustTaskContainer getInstance() {
+	static synchronized AsyncReqeustTaskContainer getInstance() {
 		if (instance == null) {
 			instance = new AsyncReqeustTaskContainer();
 		}
@@ -31,7 +28,7 @@ class AsyncReqeustTaskContainer implements AsyncReqeustTaskContainable {
 	
 	@Override
 	public void enqueue(TaskCancelRunnable runnable) {
-		cancelableMap.put(runnable.getKey(), new WeakReference<StreamCancelable>(runnable));
+		cancelableMap.put(runnable.getKey(), new WeakReference<Cancelable>(runnable));
 		threadPool.execute(runnable);
 	}
 	

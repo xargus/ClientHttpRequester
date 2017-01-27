@@ -1,4 +1,4 @@
-package center.xargus.ClientHttpRequester.connect;
+package center.xargus.ClientHttpRequester.reqeust;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -69,7 +69,7 @@ public class HttpReqeustWorker implements HttpRequestable {
 		}
 		
 		return new Response.Builder<InputStream>()
-				.setBody(new ConnectionCancelableStream(conn, connectionInputStream, connectionOutputStream))
+				.setBody(new CancelableStream(conn, connectionInputStream, connectionOutputStream))
 				.setResponseCode(responseCode)
 				.setResponseMessage(responseMessage)
 				.setHeaderFields(headerFields).build();

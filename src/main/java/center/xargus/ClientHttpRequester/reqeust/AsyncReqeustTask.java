@@ -1,22 +1,24 @@
-package center.xargus.ClientHttpRequester;
+package center.xargus.ClientHttpRequester.reqeust;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
-import center.xargus.ClientHttpRequester.connect.StreamCancelable;
-import center.xargus.ClientHttpRequester.connect.TaskCancelRunnable;
+import center.xargus.ClientHttpRequester.ClientHttpRequesterListener;
+import center.xargus.ClientHttpRequester.HttpRequestable;
+import center.xargus.ClientHttpRequester.Request;
+import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 
-public class AsyncReqeustTask<K> implements TaskCancelRunnable {
+class AsyncReqeustTask<K> implements TaskCancelRunnable {
 	private Request request;
 	private ResponseWrapper<K> responseWrapper;
 	private ClientHttpRequesterListener<K> listener;
-	private StreamCancelable cancelable;
+	private Cancelable cancelable;
 	private AsyncReqeustTaskContainable taskRemovable;
 	private Object lockObj;
 	private HttpRequestable httpRequestable;
 	
-	public AsyncReqeustTask(Request request, 
+	AsyncReqeustTask(Request request, 
 			HttpRequestable httpRequestable, 
 			ResponseWrapper<K> responseWrapper, 
 			ClientHttpRequesterListener<K> listener, 
@@ -28,7 +30,7 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 		this.taskRemovable = taskRemovable;
 		this.lockObj = new Object();
 		
-		cancelable = new StreamCancelable() {
+		cancelable = new Cancelable() {
 			private volatile boolean isCanceled = false;
 			
 			@Override
@@ -56,8 +58,8 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 				return;
 			}
 			
-			if (response.getBody() instanceof StreamCancelable) {
-				setCancelable((StreamCancelable)response.getBody());
+			if (response.getBody() instanceof Cancelable) {
+				setCancelable((Cancelable)response.getBody());
 			}
 			
 			Response<K> resultResponse = responseWrapper.getResponse(response);
@@ -74,7 +76,7 @@ public class AsyncReqeustTask<K> implements TaskCancelRunnable {
 		}
 	}
 	
-	private void setCancelable(StreamCancelable streamCancelable) {
+	private void setCancelable(Cancelable streamCancelable) {
 		synchronized (lockObj) {
 			if (cancelable.isCanceled()) {
 				streamCancelable.cancel();

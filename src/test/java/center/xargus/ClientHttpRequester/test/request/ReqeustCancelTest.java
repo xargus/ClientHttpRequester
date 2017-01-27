@@ -46,7 +46,7 @@ public class ReqeustCancelTest {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		} finally {
-			RequestService.cacnel("http://www.naver.com/");
+			requestService.cacnel("http://www.naver.com/");
 		}
 		
 		

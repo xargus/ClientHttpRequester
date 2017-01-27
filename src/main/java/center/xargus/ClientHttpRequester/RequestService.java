@@ -1,28 +1,33 @@
 package center.xargus.ClientHttpRequester;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import center.xargus.ClientHttpRequester.connect.HttpReqeustWorker;
 import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
 import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
+import center.xargus.ClientHttpRequester.reqeust.AsyncReqeuster;
+import center.xargus.ClientHttpRequester.reqeust.HttpReqeustWorker;
+import center.xargus.ClientHttpRequester.reqeust.SyncRequester;
 
 public class RequestService<T> {
 	private List<HttpResponseInterceptor> responseInterceptorList;
 	private ResponseResultTypeHandler<T> responseResultTypeHandler;
 	private Class<T> resultClassType;
 	private HttpRequestable httpRequestable;
+	private AsyncReqeuster<T> asyncReqeuster;
+	private SyncRequester<T> syncRequester;
 
-	public Response<T> request(Request request) throws RequestMethodNotFoundException, RequestUrlNotCorrectException, Exception {
+	public Response<T> request(Request request) throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException, Exception {
 		request = request.newBuilder()
 				.addHeader("Accept-Encoding", "gzip")
 				.build();
 		
-		Response<InputStream> response = httpRequestable.request(request);
-		
-		return new ResponseWrapper<T>(responseInterceptorList, responseResultTypeHandler, resultClassType).getResponse(response);
+		if (syncRequester == null) {
+			syncRequester = new SyncRequester<>(this);
+		}
+		return syncRequester.request(request);
 	}
 	
 	public void enqueue(Request request, ClientHttpRequesterListener<T> listener) {
@@ -30,18 +35,40 @@ public class RequestService<T> {
 				.addHeader("Accept-Encoding", "gzip")
 				.build();
 		
-		AsyncReqeustTask<T> task = new AsyncReqeustTask<T>(request,
-				httpRequestable,
-				new ResponseWrapper<T>(responseInterceptorList, responseResultTypeHandler, resultClassType), 
-				listener, 
-				AsyncReqeustTaskContainer.getInstance());
-		AsyncReqeustTaskContainer.getInstance().enqueue(task);
+		if (asyncReqeuster == null) {
+			asyncReqeuster = new AsyncReqeuster<>(this);
+		}
+		asyncReqeuster.request(request, listener);
 	}
 	
-	public static void cacnel(String key) {
-		AsyncReqeustTaskContainer.getInstance().cancel(key);
+	public void cacnel(String url) {
+		if (asyncReqeuster != null) {
+			asyncReqeuster.cancel(url);
+		}
 	}
 	
+	public void cancel() {
+		if (syncRequester != null) {
+			syncRequester.cancel();
+		}
+	}
+	
+	public List<HttpResponseInterceptor> getResponseInterceptorList() {
+		return responseInterceptorList;
+	}
+
+	public ResponseResultTypeHandler<T> getResponseResultTypeHandler() {
+		return responseResultTypeHandler;
+	}
+
+	public Class<T> getResultClassType() {
+		return resultClassType;
+	}
+
+	public HttpRequestable getHttpRequestable() {
+		return httpRequestable;
+	}
+
 	private RequestService(Builder<T> builder) {
 		this.responseInterceptorList = builder.responseInterceptorList;
 		this.responseResultTypeHandler = builder.responseResultTypeHandler;

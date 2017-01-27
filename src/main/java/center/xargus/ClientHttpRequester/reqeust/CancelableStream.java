@@ -1,4 +1,4 @@
-package center.xargus.ClientHttpRequester.connect;
+package center.xargus.ClientHttpRequester.reqeust;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 import center.xargus.ClientHttpRequester.utils.IOUtils;
 
-public class ConnectionCancelableStream extends InputStream implements StreamCancelable {
+class CancelableStream extends InputStream implements Cancelable {
 
 	private HttpURLConnection httpURLConnection;
 	private InputStream inputStream;
@@ -16,7 +16,7 @@ public class ConnectionCancelableStream extends InputStream implements StreamCan
 	
 	private volatile boolean isCanceled;
 
-	public ConnectionCancelableStream(HttpURLConnection httpURLConnection, InputStream inputStream, OutputStream outputStream) {
+	CancelableStream(HttpURLConnection httpURLConnection, InputStream inputStream, OutputStream outputStream) {
 		this.httpURLConnection = httpURLConnection;
 		this.inputStream = inputStream;
 		this.outputStream = outputStream;
