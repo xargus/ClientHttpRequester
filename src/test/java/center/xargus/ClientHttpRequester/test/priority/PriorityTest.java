@@ -15,6 +15,7 @@ public class PriorityTest implements RequestClientListener<String>{
 
 	private CountDownLatch latch;
 
+	//AsyncReqeustTaskContainer의 CORE_THREAD_SIZE, MAX_THREAD_SIZE size 1로 수정해야함.
 	@Test
 	public void priorityTest() {
 		Request request1 = new Request.Builder()

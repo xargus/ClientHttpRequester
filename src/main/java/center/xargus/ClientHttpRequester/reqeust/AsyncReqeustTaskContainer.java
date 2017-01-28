@@ -7,8 +7,8 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 class AsyncReqeustTaskContainer implements AsyncReqeustTaskContainable {
-	private final int CORE_THREAD_SIZE = 1;
-	private final int MAX_THREAD_SIZE = 1;
+	private final int CORE_THREAD_SIZE = 4;
+	private final int MAX_THREAD_SIZE = 6;
 	
 	private static AsyncReqeustTaskContainer instance;
 	private PriorityThreadPoolExecutor threadPool;
