@@ -50,10 +50,10 @@ public class ReqeustCancelTest {
 		}
 		
 		
-		try {
-			latch.await();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+//		try {
+//			latch.await();
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
 	}
 }
