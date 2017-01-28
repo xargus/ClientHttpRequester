@@ -1,19 +1,28 @@
-package center.xargus.ClientHttpRequester.connect;
+package center.xargus.ClientHttpRequester;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import center.xargus.ClientHttpRequester.utils.TextUtils;
+
 public class Request {
-	private String domain;
-	private String param;
-	private RequestMethodType methodType;
-	private Map<String,String> headerFields;
+	public static final int PRIORITY_NORMAL = 1;
+	public static final int PRIORITY_HIGH = 0;
+	
+	private final String domain;
+	private final InputStream postStream;
+	private final RequestMethodType methodType;
+	private final Map<String,String> headerFields;
+	private final int priority;
 	
 	private Request(Builder builder) {
 		this.domain = builder.domain;
-		this.param = builder.param;
+		this.postStream = builder.postStream;
 		this.methodType = builder.methodType;
 		this.headerFields = builder.headerFields;
+		this.priority = builder.priority;
 	}
 	
 	public Builder newBuilder() {
@@ -24,8 +33,8 @@ public class Request {
 		return domain;
 	}
 
-	public String getParam() {
-		return param;
+	public InputStream getPostStream() {
+		return postStream;
 	}
 
 	public RequestMethodType getMethodType() {
@@ -36,21 +45,28 @@ public class Request {
 		return headerFields;
 	}
 
+	public int getPriority() {
+		return priority;
+	}
+
 	public static class Builder {
 		private String domain;
-		private String param;
+		private InputStream postStream;
 		private RequestMethodType methodType;
 		private Map<String,String> headerFields;
+		private int priority;
 		
 		public Builder(){
 			headerFields = new HashMap<>();
+			priority = Request.PRIORITY_NORMAL;
 		}
 		
 		public Builder(Request request) {
 			this.domain = request.domain;
-			this.param = request.param;
+			this.postStream = request.postStream;
 			this.methodType = request.methodType;
 			this.headerFields = request.headerFields;
+			this.priority = request.priority;
 		}
 		
 		public Builder setDomain(String domain) {
@@ -58,8 +74,16 @@ public class Request {
 			return this;
 		}
 		
-		public Builder setParam(String param) {
-			this.param = param;
+		public Builder setPostBody(String body) {
+			if (!TextUtils.isEmpty(body)) {
+				setPostBody(new ByteArrayInputStream(body.getBytes()));
+			}
+			
+			return this;
+		}
+		
+		public Builder setPostBody(InputStream inputStream) {
+			this.postStream = inputStream;
 			return this;
 		}
 		
@@ -69,7 +93,12 @@ public class Request {
 		}
 		
 		public Builder addHeader(String key, String vaule) {
-			headerFields.put(key, vaule);
+			this.headerFields.put(key, vaule);
+			return this;
+		}
+		
+		public Builder setPriority(int priority) {
+			this.priority = priority;
 			return this;
 		}
 		

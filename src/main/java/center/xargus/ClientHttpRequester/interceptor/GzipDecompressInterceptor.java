@@ -2,22 +2,25 @@ package center.xargus.ClientHttpRequester.interceptor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import center.xargus.ClientHttpRequester.connect.Response;
+import center.xargus.ClientHttpRequester.Response;
 
 public class GzipDecompressInterceptor implements HttpResponseInterceptor {
 
+	public static final String GZIP_CONTENT_ENCODING = "gzip";
+	
 	@Override
 	public Response<InputStream> intercept(Response<InputStream> response) {
 		String contentEncoding = response.getContentEncoding();
 		
 		System.out.println("GzipDecompressInterceptor, Response Content-Encoding : "+contentEncoding);
-		if (response.getResponseCode() != 200 || contentEncoding == null || !contentEncoding.contains("gzip")) {
+		if (response.getResponseCode() != HttpURLConnection.HTTP_OK || contentEncoding == null || !contentEncoding.contains(GZIP_CONTENT_ENCODING)) {
 			return response;
 		}
 		
