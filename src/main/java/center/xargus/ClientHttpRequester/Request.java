@@ -8,16 +8,21 @@ import java.util.Map;
 import center.xargus.ClientHttpRequester.utils.TextUtils;
 
 public class Request {
+	public static final int PRIORITY_NORMAL = 1;
+	public static final int PRIORITY_HIGH = 0;
+	
 	private final String domain;
 	private final InputStream postStream;
 	private final RequestMethodType methodType;
 	private final Map<String,String> headerFields;
+	private final int priority;
 	
 	private Request(Builder builder) {
 		this.domain = builder.domain;
 		this.postStream = builder.postStream;
 		this.methodType = builder.methodType;
 		this.headerFields = builder.headerFields;
+		this.priority = builder.priority;
 	}
 	
 	public Builder newBuilder() {
@@ -40,14 +45,20 @@ public class Request {
 		return headerFields;
 	}
 
+	public int getPriority() {
+		return priority;
+	}
+
 	public static class Builder {
 		private String domain;
 		private InputStream postStream;
 		private RequestMethodType methodType;
 		private Map<String,String> headerFields;
+		private int priority;
 		
 		public Builder(){
 			headerFields = new HashMap<>();
+			priority = Request.PRIORITY_NORMAL;
 		}
 		
 		public Builder(Request request) {
@@ -55,6 +66,7 @@ public class Request {
 			this.postStream = request.postStream;
 			this.methodType = request.methodType;
 			this.headerFields = request.headerFields;
+			this.priority = request.priority;
 		}
 		
 		public Builder setDomain(String domain) {
@@ -81,7 +93,12 @@ public class Request {
 		}
 		
 		public Builder addHeader(String key, String vaule) {
-			headerFields.put(key, vaule);
+			this.headerFields.put(key, vaule);
+			return this;
+		}
+		
+		public Builder setPriority(int priority) {
+			this.priority = priority;
 			return this;
 		}
 		

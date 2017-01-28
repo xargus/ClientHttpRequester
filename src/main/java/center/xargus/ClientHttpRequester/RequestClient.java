@@ -6,6 +6,7 @@ import java.util.List;
 
 import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
 import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
+import center.xargus.ClientHttpRequester.interceptor.GzipDecompressInterceptor;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
 import center.xargus.ClientHttpRequester.reqeust.AsyncReqeuster;
 import center.xargus.ClientHttpRequester.reqeust.HttpReqeustWorker;
@@ -30,7 +31,7 @@ public class RequestClient<T> {
 		return syncRequester.request(request);
 	}
 	
-	public void enqueue(Request request, ClientHttpRequesterListener<T> listener) {
+	public void enqueue(Request request, RequestClientListener<T> listener) {
 		request = request.newBuilder()
 				.addHeader("Accept-Encoding", "gzip")
 				.build();
@@ -85,6 +86,7 @@ public class RequestClient<T> {
 		public Builder(Class<T> resultClassType) {
 			this.resultClassType = resultClassType;
 			this.responseInterceptorList = new ArrayList<>();
+			this.responseInterceptorList.add(0, new GzipDecompressInterceptor());
 			this.httpRequestable = new HttpReqeustWorker();
 		}
 		

@@ -5,7 +5,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
-import center.xargus.ClientHttpRequester.ClientHttpRequesterListener;
+import center.xargus.ClientHttpRequester.RequestClientListener;
 import center.xargus.ClientHttpRequester.Request;
 import center.xargus.ClientHttpRequester.RequestMethodType;
 import center.xargus.ClientHttpRequester.RequestClient;
@@ -26,7 +26,7 @@ public class ReqeustCancelTest {
 				.build();
 		
 		final CountDownLatch latch = new CountDownLatch(1);
-		requestService.enqueue(request, new ClientHttpRequesterListener<String>() {
+		requestService.enqueue(request, new RequestClientListener<String>() {
 			
 			@Override
 			public void onCompletedRequest(Response<String> response) {

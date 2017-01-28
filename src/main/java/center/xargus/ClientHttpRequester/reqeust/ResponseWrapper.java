@@ -5,7 +5,6 @@ import java.util.List;
 
 import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.ResponseResultTypeHandler;
-import center.xargus.ClientHttpRequester.interceptor.GzipDecompressInterceptor;
 import center.xargus.ClientHttpRequester.interceptor.HttpResponseInterceptor;
 import center.xargus.ClientHttpRequester.resulthandle.ResponseResultTypeProxyHandler;
 
@@ -21,7 +20,6 @@ class ResponseWrapper<T> {
 	}
 	
 	Response<T> getResponse(Response<InputStream> response) throws Exception {
-		responseInterceptorList.add(0, new GzipDecompressInterceptor());
 		for (HttpResponseInterceptor interceptor : responseInterceptorList) {
 			response = interceptor.intercept(response);
 		}

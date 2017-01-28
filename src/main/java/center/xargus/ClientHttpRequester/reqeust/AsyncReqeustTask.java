@@ -3,16 +3,16 @@ package center.xargus.ClientHttpRequester.reqeust;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
-import center.xargus.ClientHttpRequester.ClientHttpRequesterListener;
+import center.xargus.ClientHttpRequester.RequestClientListener;
 import center.xargus.ClientHttpRequester.HttpRequestable;
 import center.xargus.ClientHttpRequester.Request;
 import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 
-class AsyncReqeustTask<K> implements TaskCancelRunnable {
+class AsyncReqeustTask<K> implements TaskCancelCallable<Void> {
 	private Request request;
 	private ResponseWrapper<K> responseWrapper;
-	private ClientHttpRequesterListener<K> listener;
+	private RequestClientListener<K> listener;
 	private Cancelable cancelable;
 	private AsyncReqeustTaskContainable taskRemovable;
 	private Object lockObj;
@@ -21,7 +21,7 @@ class AsyncReqeustTask<K> implements TaskCancelRunnable {
 	AsyncReqeustTask(Request request, 
 			HttpRequestable httpRequestable, 
 			ResponseWrapper<K> responseWrapper, 
-			ClientHttpRequesterListener<K> listener, 
+			RequestClientListener<K> listener, 
 			AsyncReqeustTaskContainable taskRemovable) {
 		this.request = request;
 		this.httpRequestable = httpRequestable;
@@ -46,16 +46,16 @@ class AsyncReqeustTask<K> implements TaskCancelRunnable {
 	}
 	
 	@Override
-	public void run() {
+	public Void call() {
 		if (cancelable.isCanceled()) {
-			return;
+			return null;
 		}
 		
 		try {
 			Response<InputStream> response = httpRequestable.request(request);
 			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {	
 				listener.onFailRequest(response, null);
-				return;
+				return null;
 			}
 			
 			if (response.getBody() instanceof Cancelable) {
@@ -74,6 +74,8 @@ class AsyncReqeustTask<K> implements TaskCancelRunnable {
 			taskRemovable.cancel(getKey());
 			System.out.println("end task : "+getKey());
 		}
+		
+		return null;
 	}
 	
 	private void setCancelable(Cancelable streamCancelable) {
