@@ -1,70 +1,32 @@
 package center.xargus.ClientHttpRequester.reqeust;
 
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import center.xargus.ClientHttpRequester.RequestClientListener;
-import center.xargus.ClientHttpRequester.HttpRequestable;
-import center.xargus.ClientHttpRequester.Request;
 import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.exception.RequestCanceledException;
 
 class AsyncReqeustTask<K> implements TaskCancelCallable<Void> {
-	private Request request;
-	private ResponseWrapper<K> responseWrapper;
 	private RequestClientListener<K> listener;
-	private Cancelable cancelable;
 	private AsyncReqeustTaskContainable taskRemovable;
-	private Object lockObj;
-	private HttpRequestable httpRequestable;
+	private RequestTask<K> requestTask;
 	
-	AsyncReqeustTask(Request request, 
-			HttpRequestable httpRequestable, 
-			ResponseWrapper<K> responseWrapper, 
+	AsyncReqeustTask(RequestTask<K> requestTask, 
 			RequestClientListener<K> listener, 
 			AsyncReqeustTaskContainable taskRemovable) {
-		this.request = request;
-		this.httpRequestable = httpRequestable;
-		this.responseWrapper = responseWrapper;
+		this.requestTask = requestTask;
 		this.listener = listener;
 		this.taskRemovable = taskRemovable;
-		this.lockObj = new Object();
-		
-		cancelable = new Cancelable() {
-			private volatile boolean isCanceled = false;
-			
-			@Override
-			public void cancel() {
-				isCanceled = true;
-			}
-
-			@Override
-			public boolean isCanceled() {
-				return isCanceled;
-			}
-		};
 	}
 	
 	@Override
 	public Void call() {
-		if (cancelable.isCanceled()) {
-			return null;
-		}
-		
 		try {
-			Response<InputStream> response = httpRequestable.request(request);
-			if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {	
-				listener.onFailRequest(response, null);
-				return null;
-			}
-			
-			if (response.getBody() instanceof Cancelable) {
-				setCancelable((Cancelable)response.getBody());
-			}
-			
-			Response<K> resultResponse = responseWrapper.getResponse(response);
-			if (!cancelable.isCanceled()) {
-				listener.onCompletedRequest(resultResponse);
+			Response<K> result = requestTask.call();
+			if (result == null || result.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				listener.onFailRequest(result, null);
+			} else {
+				listener.onCompletedRequest(result);
 			}
 		} catch (RequestCanceledException exception) {
 			System.out.println("reqeust cancel exception : "+getKey());
@@ -78,28 +40,16 @@ class AsyncReqeustTask<K> implements TaskCancelCallable<Void> {
 		return null;
 	}
 	
-	private void setCancelable(Cancelable streamCancelable) {
-		synchronized (lockObj) {
-			if (cancelable.isCanceled()) {
-				streamCancelable.cancel();
-			}
-			
-			cancelable = streamCancelable;
-		}
-	}
-	
 	@Override
 	public void cancel() {
-		synchronized (lockObj) {
-			cancelable.cancel();
-		}
+		requestTask.cancel();
 	}
 	@Override
 	public boolean isCanceled() {
-		return cancelable.isCanceled();
+		return requestTask.isCanceled();
 	}
 	@Override
 	public String getKey() {
-		return request.getDomain();
+		return requestTask.getKey();
 	}
 }

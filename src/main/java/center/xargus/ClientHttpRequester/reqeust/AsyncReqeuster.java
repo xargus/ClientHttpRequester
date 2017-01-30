@@ -12,9 +12,7 @@ public class AsyncReqeuster<T> {
 	}
 	
 	public void request(Request request, RequestClientListener<T> listener) {
-		AsyncReqeustTask<T> task = new AsyncReqeustTask<T>(request,
-				service.getHttpRequestable(),
-				new ResponseWrapper<T>(service.getResponseInterceptorList(), service.getResponseResultTypeHandler(), service.getResultClassType()), 
+		AsyncReqeustTask<T> task = new AsyncReqeustTask<T>(RequestTask.create(request, service),
 				listener,
 				AsyncReqeustTaskContainer.getInstance());
 		AsyncReqeustTaskContainer.getInstance().enqueue(task, request.getPriority());

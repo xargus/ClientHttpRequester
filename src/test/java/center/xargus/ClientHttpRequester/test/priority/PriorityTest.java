@@ -1,6 +1,5 @@
 package center.xargus.ClientHttpRequester.test.priority;
 
-import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
@@ -10,6 +9,7 @@ import center.xargus.ClientHttpRequester.RequestClient;
 import center.xargus.ClientHttpRequester.RequestClientListener;
 import center.xargus.ClientHttpRequester.RequestMethodType;
 import center.xargus.ClientHttpRequester.Response;
+import center.xargus.ClientHttpRequester.test.priority.TestDummyHttpReqeuster;
 
 public class PriorityTest implements RequestClientListener<String>{
 
@@ -56,7 +56,7 @@ public class PriorityTest implements RequestClientListener<String>{
 	}
 
 	@Override
-	public void onFailRequest(Response<InputStream> response, Exception e) {
+	public void onFailRequest(Response<String> response, Exception e) {
 		e.printStackTrace();
 		latch.countDown();
 	}

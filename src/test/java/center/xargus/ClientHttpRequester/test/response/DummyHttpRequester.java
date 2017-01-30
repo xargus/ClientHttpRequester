@@ -14,7 +14,8 @@ public class DummyHttpRequester implements HttpRequestable {
 	@Override
 	public Response<InputStream> request(Request request)
 			throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException {
-		return new Response.Builder<InputStream>().build();
+		return new Response.Builder<InputStream>().setResponseCode(200)
+				.build();
 	}
 
 }

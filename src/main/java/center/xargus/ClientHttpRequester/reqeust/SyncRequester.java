@@ -1,7 +1,6 @@
 package center.xargus.ClientHttpRequester.reqeust;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import center.xargus.ClientHttpRequester.Request;
 import center.xargus.ClientHttpRequester.RequestClient;
@@ -19,15 +18,9 @@ public class SyncRequester<T> {
 	}
 	
 	public Response<T> request(Request request) throws RequestMethodNotFoundException, RequestUrlNotCorrectException, IOException, Exception {
-		Response<InputStream> response = service.getHttpRequestable().request(request);
-		if (response.getBody() instanceof Cancelable) {
-			cancelable = (Cancelable) response.getBody();
-		}
-		
-		ResponseWrapper<T> responseWrapper = new ResponseWrapper<T>(service.getResponseInterceptorList(), 
-				service.getResponseResultTypeHandler(), 
-				service.getResultClassType());
-		return responseWrapper.getResponse(response);
+		RequestTask<T> requestTask = RequestTask.create(request, service);
+		cancelable = requestTask;
+		return requestTask.call();
 	}
 	
 	public void cancel() {

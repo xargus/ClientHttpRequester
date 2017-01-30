@@ -2,15 +2,14 @@ package center.xargus.ClientHttpRequester.test.request;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
-import center.xargus.ClientHttpRequester.RequestClientListener;
 import center.xargus.ClientHttpRequester.Request;
-import center.xargus.ClientHttpRequester.RequestMethodType;
 import center.xargus.ClientHttpRequester.RequestClient;
+import center.xargus.ClientHttpRequester.RequestClientListener;
+import center.xargus.ClientHttpRequester.RequestMethodType;
 import center.xargus.ClientHttpRequester.Response;
 import center.xargus.ClientHttpRequester.exception.RequestMethodNotFoundException;
 import center.xargus.ClientHttpRequester.exception.RequestUrlNotCorrectException;
@@ -65,7 +64,7 @@ public class RequestTest {
 			}
 
 			@Override
-			public void onFailRequest(Response<InputStream> response, Exception e) {
+			public void onFailRequest(Response<String> response, Exception e) {
 				System.out.println("fail");
 				latch.countDown();
 			}
